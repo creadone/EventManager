@@ -17,33 +17,29 @@
  *
  */
 
-var EventManager = new (function() {
-  var events = {};
+ HubEmitter = {
+  _events: {},
 
-  this.publish = function(name, data) {
-    return new Promise(function(resolve, reject) {
-      var handlers = events[name];
-      if(!!handlers === false) return;
-      handlers.forEach(function(handler) {
-        handler.call(this, data);
-      });
-      resolve();
+  fire: function(name, data) {
+    var handlers = this._events[name];
+    if(!!handlers === false) return;
+    handlers.forEach(function(handler) {
+      handler.call(this, data);
     });
-  };
+  },
 
-  this.subscribe = function(name, handler) {
-    var handlers = events[name];
+  on: function(name, handler) {
+    var handlers = this._events[name];
     if(!!handlers === false) {
-      handlers = events[name] = [];
+      handlers = this._events[name] = [];
     }
     handlers.push(handler);
-  };
+  },
 
-  this.unsubscribe = function(name, handler) {
-    var handlers = events[name];
+  off: function(name, handler) {
+    var handlers = this._events[name];
     if(!!handlers === false) return;
-
     var handlerIdx = handlers.indexOf(handler);
     handlers.splice(handlerIdx);
-  };
-});
+  }
+};
